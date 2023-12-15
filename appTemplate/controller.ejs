@@ -1,0 +1,80 @@
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, Res } from "@nestjs/common"
+import { Request, Response } from "express";
+import { <%= data.objName %>Service } from "./<%= data.objName %>.service"
+import { <%= data.objName %> } from "./<%= data.objName %>.model";
+
+@Controller('api/v1/<%= data.objName %>')
+export class <%= data.objName %>Controller{
+    constructor(private readonly <%= data.objName %>_Service: <%= data.objName %>Service){}
+    <%_ 
+    updatearr = function(){
+   var updateconditions = [];
+    data.objOps.forEach((col) => { 
+  if(col.opName === 'update'){
+    for (var cond=0; cond < col.conditionparams.length; cond++){
+         updateconditions.push(col.conditionparams[cond])     
+    }    
+         } 
+              })                    
+                   return updateconditions;
+} _%>
+<%_
+    deletearr = function(){
+         var delconditions = [];
+          data.objOps.forEach((col) => { 
+        if ( col.opName === 'delete'){ 
+                    col.conditionparams.forEach((cond) => {
+                         delconditions.push(cond) 
+                         }); 
+                          }
+                         })
+                         
+                          return delconditions;
+} _%>
+<%_
+    getarr = function(){
+         var getconditions = [];
+          data.objOps.forEach((col) => { 
+        if ( col.opName === 'Get'){ 
+                    col.conditionparams.forEach((cond) => {
+                         getconditions.push(cond) 
+                         }); 
+                          }
+                         })                          
+                          return getconditions;
+} _%>
+    @Get()
+    async getAll<%= data.objName %>(@Req() request:Request, @Res() response:Response ):Promise<any>{
+         const result =  await this.<%= data.objName %>_Service.getAll<%= data.objName %>()
+         return response.status(200).json({
+              status: "Ok!",
+              message: "Successfully fetch data!",
+              result: result 
+         })
+    }
+
+    @Post()
+    async post<%= data.objName %>(@Body() postData: <%= data.objName %>):Promise<<%= data.objName %>>{
+         return this.<%= data.objName %>_Service.create<%= data.objName %>(postData)
+    }
+
+    <%_ var ref = getarr() _%> 
+    @Get('<%_ for (var i=0; i < ref.length; i++){ _%>:<%= ref[i].key %><%_ if (i !== ref.length-1) { _%>/<%_ }} _%>')
+    async get<%= data.objName %>(<%_ for (var i=0; i < ref.length; i++){ _%>@Param('<%= ref[i].key %>') <%= ref[i].key %>:<% if (ref[i].datatype === 'Int'){ %>number<% } else {%> <%= ref[i].datatype.toLowerCase() %><%_ } _%><%_ if (i !== ref.length-1) { _%>,<% }} %>):Promise<<%= data.objName %> | null>{
+         return this.<%= data.objName %>_Service.get<%= data.objName %>(<%_ for (var i=0; i < ref.length; i++) { _%><%= ref[i].key %><%_ if (i !== ref.length-1) { _%>,<% }} %>)
+    }   
+      
+
+    <%_ var ref = deletearr() _%> 
+    @Delete('<%_ for (var i=0; i < ref.length; i++){ _%>:<%= ref[i].key %><%_ if (i !== ref.length-1) { _%>/<%_ }} _%>')
+    async delete<%= data.objName %>(<%_ for (var i=0; i < ref.length; i++){ _%>@Param('<%= ref[i].key %>') <%= ref[i].key %>:<% if (ref[i].datatype === 'Int'){ %>number<% } else {%> <%= ref[i].datatype.toLowerCase() %><%_ } _%><%_ if (i !== ref.length-1) { _%>,<% }} %>):Promise<<%= data.objName %>>{
+         return this.<%= data.objName %>_Service.delete<%= data.objName %>(<%_ for (var i=0; i < ref.length; i++) { _%><%= ref[i].key %><%_ if (i !== ref.length-1) { _%>,<% }} %>)
+    }
+
+    <%_ var ref = updatearr() _%> 
+    @Put('<%_ for (var i=0; i < ref.length; i++){ _%>:<%= ref[i].key %><%_ if (i !== ref.length-1) { _%>/<%_ }} _%>')
+    async update<%= data.objName %>(<%_ for (var i=0; i < ref.length; i++){ _%>@Param('<%= ref[i].key %>') <%= ref[i].key %>:<% if (ref[i].datatype === 'Int'){ %>number<% } else {%> <%= ref[i].datatype.toLowerCase() %><%}%>,<%_ } _%>@Body() data: <%= data.objName %>): Promise<<%= data.objName %>> {
+      return this.<%= data.objName %>_Service.update<%= data.objName %>(<%_ for (var i=0; i < ref.length; i++) { _%><%= ref[i].key %>,<% } %>data);
+    }
+}
+

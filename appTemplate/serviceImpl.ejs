@@ -1,0 +1,95 @@
+import { Injectable } from "@nestjs/common"
+import { PrismaService } from "src/prisma.service"
+import { <%= data.objName %> } from "./<%= data.objName %>.model"
+
+@Injectable()
+export class <%= data.objName %>Service{
+     constructor(private prisma: PrismaService){}   
+<%_
+ selectarr = function(){
+     var columns = [];
+     data.objOps.forEach((col) => { 
+          if(col.opName === 'update'){   
+          for (var k=0; k < col.params.length; k++){    
+          columns.push(col.params[k])         
+          }
+     }
+     })
+     return columns;
+} _%>
+<%_ 
+     updatearr = function(){
+    var updateconditions = [];
+     data.objOps.forEach((col) => { 
+   if(col.opName === 'update'){
+     for (var cond=0; cond < col.conditionparams.length; cond++){
+          updateconditions.push(col.conditionparams[cond])     
+     }    
+          } 
+               })                    
+                    return updateconditions;
+} _%>
+<%_
+     deletearr = function(){
+          var delconditions = [];
+           data.objOps.forEach((col) => { 
+         if ( col.opName === 'delete'){ 
+               col.conditionparams.forEach((cond) => {
+                    delconditions.push(cond) 
+                    }); 
+               }
+          })                          
+          return delconditions;
+} _%>
+<%_
+     getarr = function(){
+          var getconditions = [];
+           data.objOps.forEach((col) => { 
+         if ( col.opName === 'Get'){ 
+                     col.conditionparams.forEach((cond) => {
+                          getconditions.push(cond) 
+                          }); 
+                           }
+                          })                          
+                           return getconditions;
+} _%>
+
+    
+     <%_ var ref = updatearr() _%> 
+     <%_ var sel = selectarr() _%> 
+
+     async update<%= data.objName %>(<%_ for (var i=0; i<ref.length; i++){ _%><%= ref[i].key %>:<% if (ref[i].datatype === 'Int'){ %>number<% } else {%> <%= ref[i].datatype.toLowerCase() %><%_ } _%>,<%_ } _%> data:<%= data.objName %>):Promise<<%= data.objName %>>{
+          return this.prisma.<%= data.objName.toLowerCase() %>.update({
+                    where: {<%_ for (var i=0; i<ref.length; i++){ _%><%= ref[i].key %>:<% if (ref[i].datatype === 'Int'){ %>Number<% } else {%> <%= ref[i].datatype%><% } %>(<%= ref[i].key %>)<% if (i !== ref.length-1) { %>,<%_ }} _%>},
+                    data:{<%_ for (var i=0; i<sel.length; i++){ _%><%= sel[i].key %>: data.<%= sel[i].key %><% if (i !== sel.length-1) { %>,<%_ }} _%>}
+              
+          })
+     }
+
+     async create<%= data.objName %>(data: <%= data.objName %>): Promise<<%= data.objName %>>{
+        return this.prisma.<%= data.objName.toLowerCase() %>.create({
+             data,
+        })
+     }
+
+     async getAll<%= data.objName %>(): Promise<<%= data.objName %>[]>{
+        return this.prisma.<%= data.objName.toLowerCase() %>.findMany()
+     }
+
+     <%_ var ref = getarr() _%> 
+     async get<%= data.objName %>(<%_ for (var i=0; i<ref.length; i++){ _%><%= ref[i].key %>:<% if (ref[i].datatype === 'Int'){ %>number<% } else {%> <%= ref[i].datatype.toLowerCase() %><% } %><% if (i !== ref.length-1) { %>,<%_ }} _%>): Promise<<%= data.objName %> | null>{
+          return this.prisma.<%= data.objName.toLowerCase() %>.findUnique({
+               where: {<%_ for (var i=0; i<ref.length; i++){ _%><%= ref[i].key %>:<% if (ref[i].datatype === 'Int'){ %>Number<% } else {%> <%= ref[i].datatype%><% } %>(<%= ref[i].key %>)<% if (i !== ref.length-1) { %>,<%_ }} _%>}
+          })
+     }
+
+   <%_ var ref = deletearr() _%> 
+     async delete<%= data.objName %>(<%_ for (var i=0; i<ref.length; i++){ _%><%= ref[i].key %>:<% if (ref[i].datatype === 'Int'){ %>number<% } else {%> <%= ref[i].datatype.toLowerCase() %><% } %><% if (i !== ref.length-1) { %>,<%_ }} _%>):Promise<<%= data.objName %>>{
+     return this.prisma.<%= data.objName.toLowerCase() %>.delete({
+          where:{<%_ for (var i=0; i<ref.length; i++){ _%><%= ref[i].key %>:<% if (ref[i].datatype === 'Int'){ %>Number<% } else {%> <%= ref[i].datatype%><% } %>(<%= ref[i].key %>)<% if (i !== ref.length-1) { %>,<%_ }} _%>}
+     })
+}
+
+}
+    
+   

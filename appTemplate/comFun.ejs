@@ -1,0 +1,24 @@
+<%_
+     deletearr = function(data){
+          var delconditions = [];
+           data.objOps.forEach((col) => { 
+         if ( col.opName === 'delete'){ 
+               col.conditionparams.forEach((cond) => {
+                    delconditions.push(cond) 
+                    }); 
+               }
+          })                          
+          return delconditions;
+} _%>
+<%_ 
+     updatearr = function(data){
+    var updateconditions = [];
+     data.objOps.forEach((col) => { 
+   if(col.opName === 'update'){
+     for (var cond=0; cond < col.conditionparams.length; cond++){
+          updateconditions.push(col.conditionparams[cond])     
+     }    
+        } 
+    })                    
+    return updateconditions;
+} _%>

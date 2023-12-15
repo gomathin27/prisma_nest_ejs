@@ -1,0 +1,22 @@
+
+datasource db { 
+    provider = "<%= data.provider %>"
+    url = "<%= data.url %>"
+  }  
+  
+  generator client { 
+    provider = "prisma-client-js"
+    synchronize = <%= data.synchronize %> 
+  }  
+  
+  <% if(data.dbObjects.objValues.length > 0) { %>
+  <% data.dbObjects.objValues.forEach((table) => { %>
+    model <%= table.objName %> {  <% table.objCols.forEach((columns) => { %>       
+        <%= columns.key %> <% if(columns.isOption === true) { %><%= columns.datatype %>? <% } else {%> <%= columns.datatype %> <% } %> <%= columns.constraints %> <% }) %>    
+   } 
+  <% }) } else { %>
+    model <%= data.dbObjects.objValues.objName %> {  <% data.dbObjects.objValues.objCols.forEach((columns) => { %>    
+      <%= columns.key %> <% if(columns.isOption === true) { %><%= columns.datatype %>? <% } else {%> <%= columns.datatype %> <% } %> <%= columns.constraints %> <% }) %>  
+    } 
+    <% } %>
+  

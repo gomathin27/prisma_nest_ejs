@@ -1,0 +1,24 @@
+
+datasource db { 
+    provider = "postgresql"
+    url = "postgresql://postgres:Welcome@100@192.168.2.251:35432/test_postgres?schema=prisma"
+  }  
+  
+  generator client { 
+    provider = "prisma-client-js"
+    synchronize = true 
+  }  
+  
+  
+  
+    model Profile {         
+        id  Int  @id @default(autoincrement())        
+        createdAt  DateTime  @default(now())        
+        updatedAt  DateTime  @updatedAt        
+        title String?  @db.VarChar(255)        
+        content  String          
+        published  Boolean  @default(false)        
+        authorId  Int       
+   } 
+  
+  

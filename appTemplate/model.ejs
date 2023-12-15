@@ -1,0 +1,11 @@
+import { Prisma } from "@prisma/client";
+
+
+export class <%= data.objName %> implements Prisma.<%= data.objName %>CreateInput{
+    <% data.objCols.forEach((columns) => { %> 
+        <%_ if(columns.key === 'id') { _%>             
+        <% if(columns.isOption === true) { %><%= columns.key %>?<%_} else {_%> <%= columns.key %> <% } %>:  <%_ if(columns.datatype === 'Int') { _%> number;  <%_ } else { _%> <%= columns.datatype.toLowerCase() %> <%_ }} else { _%> 
+        <% if(columns.isOption === true) { %><%= columns.key %>?<%_} else {_%> <%= columns.key %> <% } %>:  <%_ if(columns.datatype === 'DateTime') { _%> Date; <%_ } else if(columns.datatype === 'Int') { _%> number; <%_ } else { _%> <%= columns.datatype.toLowerCase() %>; <%_ }} _%> 
+    <% }) %> 
+}
+    

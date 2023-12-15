@@ -1,0 +1,11 @@
+import { Module } from "@nestjs/common";
+import { <%= data %>Controller } from "./<%= data %>.controller";
+import { <%= data %>Service } from "./<%= data %>.service";
+import { PrismaService } from "src/prisma.service";
+
+@Module({
+     controllers: [<%= data %>Controller],
+     providers: [<%= data %>Service, PrismaService]
+})
+export class <%= data %>Module{}
+

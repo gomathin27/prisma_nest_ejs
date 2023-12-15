@@ -1,0 +1,11 @@
+import { Module } from '@nestjs/common';
+import { TasksModule } from './tasks/tasks.module';
+import { <%= data %>Module } from './<%= data %>/<%= data %>.module';
+
+
+@Module({
+  imports: [<%= data %>Module,TasksModule],
+  controllers: [],
+  providers: [],
+})
+export class AppModule {}
